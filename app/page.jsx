@@ -17,7 +17,10 @@ const SearchIcon = () => (
 // Map numerical key to pitch class notation
 const KEYS = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
 
+import Balatro from './components/Balatro/Balatro';
+
 export default function Home() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [url, setUrl] = useState('');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -87,70 +90,78 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] text-gray-100 font-sans selection:bg-green-500 selection:text-white">
+    <div className="relative min-h-screen overflow-hidden text-gray-100 font-sans selection:bg-green-500 selection:text-white">
+      {/* Background */}
+      <div className="absolute inset-0 -z-10">
+        <Balatro
+          isRotate={false}
+          mouseInteraction
+          pixelFilter={745}
+          color1="#DE443B"
+          color2="#006BB4"
+          color3="#162325"
+        />
+      </div>
 
       {/* Navbar */}
-      <nav className="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
-        <div className="text-2xl font-bold text-white tracking-tight">
+      <nav className="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center relative z-50">
+        <div className="text-2xl font-bold text-white tracking-tight z-50">
           VibeChecker
         </div>
-        <div className="hidden md:flex space-x-8 text-sm font-medium text-gray-400">
-          <a href="#" className="hover:text-white transition-colors">Home</a>
-          <a href="#" className="hover:text-white transition-colors">Artists</a>
-          <a href="#" className="hover:text-white transition-colors">Blog</a>
-          <a href="#" className="hover:text-white transition-colors">API</a>
+
+        {/* Hamburger Icon */}
+        <button 
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="z-50 p-2 text-white hover:text-green-500 transition-colors focus:outline-none"
+        >
+          {isMenuOpen ? (
+             <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          )}
+        </button>
+
+        {/* Fullscreen Menu Overlay */}
+        <div className={`fixed inset-0 bg-[#020617]/95 backdrop-blur-3xl z-40 flex flex-col items-center justify-center transition-opacity duration-300 ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+          <div className="flex flex-col space-y-8 text-center text-2xl font-bold">
+            <a href="#" className="hover:text-green-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Home</a>
+            <a href="#" className="hover:text-green-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Artists</a>
+            <a href="#" className="hover:text-green-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Blog</a>
+            <a href="#" className="hover:text-green-500 transition-colors" onClick={() => setIsMenuOpen(false)}>API</a>
+            <a href="#analyze" className="text-green-500 hover:text-green-400 transition-colors" onClick={() => setIsMenuOpen(false)}>Track a Song</a>
+          </div>
         </div>
-        <a href="#analyze" className="bg-green-600 hover:bg-green-500 text-black font-bold py-2 px-4 rounded transition-colors text-sm">
-          Track a Song
-        </a>
       </nav>
 
       <main className="flex flex-col items-center justify-start pt-20 pb-20 px-4">
 
-        {/* Hero */}
-        <div className="text-center max-w-3xl mx-auto space-y-6 mb-12">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-green-500/30 bg-green-500/10 text-green-400 text-xs font-medium tracking-wide uppercase mb-4">
-            <span className="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
-            Tracking millions of songs daily
-          </div>
-
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white leading-[1.1]">
-            Free Spotify <br />
-            <span className="text-green-500">Stream Counter</span>
-          </h1>
-
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
-            Track any song's streaming performance with daily updates. Get historical data, charts, and insights to understand your music's journey.
-          </p>
-        </div>
-
-        {/* Search Input */}
-        <div id="analyze" className="w-full max-w-2xl">
-          <form onSubmit={analyze} className="flex flex-col sm:flex-row gap-3 bg-[#111625] p-2 rounded-xl border border-gray-800 shadow-2xl">
+        {/* Simplified Input Section */}
+        <div id="analyze" className="w-full max-w-xl z-10 flex flex-col gap-4 items-center justify-center min-h-[50vh]">
+          <p className="text-white/60 text-lg font-medium tracking-wide">drop in the spotify link</p>
+          
+          <form onSubmit={analyze} className="w-full flex flex-col gap-4">
             <input
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="Enter track name, Spotify link, or URI..."
-              className="flex-1 bg-transparent border-none text-white placeholder-gray-500 focus:ring-0 focus:outline-none px-4 py-3 text-lg w-full"
+              placeholder="https://open.spotify.com/track/..."
+              className="w-full bg-white/5 border border-white/10 text-white placeholder-white/20 focus:ring-1 focus:ring-white/30 focus:border-white/30 focus:outline-none px-6 py-4 rounded-xl text-xl backdrop-blur-md transition-all text-center"
             />
             <button
               type="submit"
               disabled={loading}
-              className="bg-green-500 hover:bg-green-400 text-black font-bold py-3 px-8 rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap text-lg shadow-lg shadow-green-900/20"
+              className="w-full bg-white text-black hover:bg-gray-200 font-bold py-4 px-8 rounded-xl transition-all disabled:opacity-50 text-xl shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99]"
             >
-              {loading ? 'Analyzing...' : 'Track Streams'}
+              {loading ? 'vibing...' : 'vibe check'}
             </button>
           </form>
-
-          <div className="flex justify-center flex-wrap gap-x-8 gap-y-2 mt-6 text-sm text-gray-400">
-            <div className="flex items-center"><CheckIcon /> 100% Free</div>
-            <div className="flex items-center"><CheckIcon /> Daily Updates</div>
-            <div className="flex items-center"><CheckIcon /> Historical Data</div>
-          </div>
         </div>
 
         {error && (
-          <div className="mt-8 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg">
+          <div className="mt-8 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg backdrop-blur-sm">
             {error}
           </div>
         )}
@@ -215,8 +226,10 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full border-t border-gray-900 py-8 text-center text-gray-600 text-sm mt-auto">
-        &copy; {new Date().getFullYear()} VibeChecker. All rights reserved.
+      <footer className="w-full mt-auto py-10 flex flex-col items-center justify-end overflow-hidden pointer-events-none select-none">
+         <h1 className="text-[15vw] leading-[0.8] font-black text-white/10 tracking-tighter">
+            VIBECHECKER
+         </h1>
       </footer>
     </div>
   );
